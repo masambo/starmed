@@ -1,0 +1,9 @@
+# Netlify Redirects
+# This file enables "Clean URLs" for your site.
+
+# Redirect /uluntu-medicare and /uluntu-medicare/ to the HTML file
+/uluntu-medicare    /uluntu-medicare.html   200
+/uluntu-medicare/   /uluntu-medicare.html   200
+
+# Optional: Catch-all to redirect 404s to home (uncomment if desired)
+# /*   /index.html   404
