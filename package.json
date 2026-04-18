@@ -1,0 +1,19 @@
+{
+  "name": "starmed-app",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Star Medical Services — The People's Practice",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev": "npx live-server --port=3000 --no-browser"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "typescript": "^5.7.0"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "resend": "^6.10.0"
+  }
+}
