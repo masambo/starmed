@@ -3757,3 +3757,196 @@ ul, ol {
     width: 30px;
   }
 }
+
+/* ============================================
+   FLAGSHIP BANNER
+   ============================================ */
+.flagship-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  background: linear-gradient(135deg, rgba(0,71,143,0.06) 0%, rgba(0,71,143,0.03) 100%);
+  border: 1.5px solid rgba(0,71,143,0.18);
+  border-left: 5px solid rgb(0,71,143);
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin-bottom: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.flagship-banner::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(0,71,143,0.04);
+  pointer-events: none;
+}
+
+.flagship-banner-icon {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: rgb(0,71,143);
+  color: rgb(146,208,80);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,71,143,0.25);
+}
+
+.flagship-banner-body {
+  flex: 1;
+}
+
+.flagship-banner-eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(0,71,143);
+  margin-bottom: 8px;
+  opacity: 0.7;
+}
+
+.flagship-banner-text {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgb(40,60,90);
+  margin: 0;
+  font-weight: 500;
+}
+
+.flagship-banner-cta {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: rgb(0,71,143);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: 999px;
+  white-space: nowrap;
+  align-self: center;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.flagship-banner-cta:hover {
+  background: rgb(20,90,165);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .flagship-banner {
+    flex-direction: column;
+    padding: 24px 20px;
+  }
+  .flagship-banner-cta {
+    align-self: flex-start;
+    margin-top: 4px;
+  }
+}
+
+/* ============================================
+   CSR CARDS
+   ============================================ */
+.csr-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 32px;
+  box-shadow: 0 4px 20px rgba(0,71,143,0.07);
+  border: 1px solid rgba(0,71,143,0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.csr-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 36px rgba(0,71,143,0.13);
+}
+
+.csr-card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+
+.csr-card-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: rgb(0,71,143);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+.csr-card-text {
+  font-size: 0.96rem;
+  color: rgb(89,89,89);
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* ============================================
+   ULUNTU PROJECT PARTNER GRID
+   ============================================ */
+.uluntu-partner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.uluntu-partner-card {
+  background: #fff;
+  border: 1px solid rgba(0,71,143,0.1);
+  border-radius: 16px;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+  box-shadow: 0 2px 10px rgba(0,71,143,0.05);
+}
+
+.uluntu-partner-card:hover {
+  box-shadow: 0 8px 28px rgba(0,71,143,0.13);
+  transform: translateY(-4px);
+  border-color: rgba(0,71,143,0.2);
+}
+
+.uluntu-partner-card img {
+  width: 64px;
+  height: 48px;
+  object-fit: contain;
+  object-position: center;
+}
+
+.uluntu-partner-card span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgb(60,80,110);
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+@media (max-width: 640px) {
+  .uluntu-partner-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 14px;
+  }
+  .uluntu-partner-card {
+    padding: 18px 12px;
+  }
+}
