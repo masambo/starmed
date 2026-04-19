@@ -2,21 +2,52 @@ const { Resend } = require('resend');
 const { PDFDocument, StandardFonts, rgb } = require('pdf-lib');
 const fs   = require('fs');
 const path = require('path');
+const formidable = require('formidable');
+
+// Vercel: disable built-in body parser so formidable can handle it
+module.exports.config = { api: { bodyParser: false } };
+
+// ─── Helper: parse multipart OR json body ────────────────────────────────────
+function parseBody(req) {
+  return new Promise((resolve, reject) => {
+    const contentType = req.headers['content-type'] || '';
+
+    if (contentType.includes('multipart/form-data')) {
+      const form = formidable({ maxFileSize: 5 * 1024 * 1024, keepExtensions: true });
+      form.parse(req, (err, fields, files) => {
+        if (err) return reject(err);
+        // formidable v3 returns arrays for each field
+        const data = {};
+        for (const [k, v] of Object.entries(fields)) {
+          data[k] = Array.isArray(v) ? v[0] : v;
+        }
+        resolve({ data, files });
+      });
+    } else {
+      // Plain JSON fallback
+      let raw = '';
+      req.on('data', chunk => (raw += chunk));
+      req.on('end', () => {
+        try { resolve({ data: JSON.parse(raw || '{}'), files: {} }); }
+        catch (e) { reject(e); }
+      });
+      req.on('error', reject);
+    }
+  });
+}
 
 module.exports = async function handler(req, res) {
-  // Only accept POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Check if Vercel has the API key
   if (!process.env.RESEND_API_KEY) {
-    return res.status(500).json({ error: 'Vercel is missing the RESEND_API_KEY environment variable. Please add it in the Vercel dashboard.' });
+    return res.status(500).json({ error: 'Vercel is missing the RESEND_API_KEY environment variable.' });
   }
 
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
-    const data = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    const { data, files } = await parseBody(req);
 
     // ─── Build PDF ────────────────────────────────────────────────────────────
     const pdfDoc = await PDFDocument.create();
@@ -41,7 +72,6 @@ module.exports = async function handler(req, res) {
         height: logoDims.height,
       });
     } catch (logoErr) {
-      // Logo not critical — proceed without it if file can't be read
       console.warn('Logo not embedded:', logoErr.message);
     }
 
@@ -50,27 +80,13 @@ module.exports = async function handler(req, res) {
         page  = pdfDoc.addPage([595.28, 841.89]);
         yIdx  = 780;
       }
-      page.drawText(String(text ?? ''), {
-        x: margin,
-        y: yIdx,
-        size,
-        font: isBold ? boldFont : font,
-        color,
-      });
+      page.drawText(String(text ?? ''), { x: margin, y: yIdx, size, font: isBold ? boldFont : font, color });
       yIdx -= (size + 8);
     };
 
     const drawLine = () => {
-      if (yIdx < 60) {
-        page  = pdfDoc.addPage([595.28, 841.89]);
-        yIdx  = 780;
-      }
-      page.drawLine({
-        start: { x: margin, y: yIdx },
-        end:   { x: pageWidth - margin, y: yIdx },
-        thickness: 0.5,
-        color: rgb(0.7, 0.7, 0.7),
-      });
+      if (yIdx < 60) { page = pdfDoc.addPage([595.28, 841.89]); yIdx = 780; }
+      page.drawLine({ start: { x: margin, y: yIdx }, end: { x: pageWidth - margin, y: yIdx }, thickness: 0.5, color: rgb(0.7, 0.7, 0.7) });
       yIdx -= 10;
     };
 
@@ -85,48 +101,52 @@ module.exports = async function handler(req, res) {
 
     const sections = {
       '1. Plan Selection': [
-        ['Plan Type',          data.planType],
-        ['Payment Frequency',  data.paymentFreq],
+        ['Plan Type',         data.planType],
+        ['Payment Frequency', data.paymentFreq],
       ],
       '2. Principal Member Details': [
-        ['Full Name',              `${data.firstName ?? ''} ${data.surname ?? ''}`],
-        ['ID / Passport No.',      data.idNumber],
-        ['Date of Birth',          data.dob],
-        ['Gender',                 data.gender],
-        ['Nationality',            data.nationality],
-        ['Residential Address',    `${data.address ?? ''}${data.city ? ', ' + data.city : ''}${data.postalCode ? ' - ' + data.postalCode : ''}`],
-        ['Mobile Number',          data.mobile],
-        ['Alternate Number',       data.altNumber],
-        ['Employer',               data.employer],
-        ['Occupation',             data.occupation],
+        ['Full Name',            `${data.firstName ?? ''} ${data.surname ?? ''}`],
+        ['ID / Passport No.',    data.idNumber],
+        ['Date of Birth',        data.dob],
+        ['Gender',               data.gender],
+        ['Nationality',          data.nationality],
+        ['Residential Address',  `${data.address ?? ''}${data.city ? ', ' + data.city : ''}${data.postalCode ? ' - ' + data.postalCode : ''}`],
+        ['Mobile Number',        data.mobile],
+        ['Alternate Number',     data.altNumber],
+        ['Employer',             data.employer],
+        ['Occupation',           data.occupation],
       ],
       '3. Medical History': [
-        ['Age / Height / Weight',      `${data.age || 'N/A'} yrs / ${data.height || 'N/A'} / ${data.weight || 'N/A'}`],
-        ['Existing Conditions',        data.existingConditions + (data.existingConditionsDetail ? `: ${data.existingConditionsDetail}` : '')],
-        ['Smoking Status',             data.smoking],
-        ['Alcohol Consumption',        data.alcohol],
-        ['Chronic Medication',         data.chronicMed + (data.chronicMedDetail ? `: ${data.chronicMedDetail}` : '')],
-        ['Family Chronic Illnesses',   data.familyChronic + (data.familyChronicDetail ? `: ${data.familyChronicDetail}` : '')],
-        ['Previous Surgeries',         data.surgeries + (data.surgeriesDetail ? `: ${data.surgeriesDetail}` : '')],
-        ['Previous Accidents',         data.accidents + (data.accidentsDetail ? `: ${data.accidentsDetail}` : '')],
-        ['Hospitalisations',           data.hospitalisations + (data.hospitalisationsDetail ? `: ${data.hospitalisationsDetail}` : '')],
-        ['Allergies',                  data.allergies + (data.allergiesDetail ? `: ${data.allergiesDetail}` : '')],
-        ['Pregnant?',                  data.pregnant],
+        ['Age / Height / Weight',    `${data.age || 'N/A'} yrs / ${data.height || 'N/A'} / ${data.weight || 'N/A'}`],
+        ['Existing Conditions',      data.existingConditions + (data.existingConditionsDetail ? `: ${data.existingConditionsDetail}` : '')],
+        ['Smoking Status',           data.smoking],
+        ['Alcohol Consumption',      data.alcohol],
+        ['Chronic Medication',       data.chronicMed + (data.chronicMedDetail ? `: ${data.chronicMedDetail}` : '')],
+        ['Family Chronic Illnesses', data.familyChronic + (data.familyChronicDetail ? `: ${data.familyChronicDetail}` : '')],
+        ['Previous Surgeries',       data.surgeries + (data.surgeriesDetail ? `: ${data.surgeriesDetail}` : '')],
+        ['Previous Accidents',       data.accidents + (data.accidentsDetail ? `: ${data.accidentsDetail}` : '')],
+        ['Hospitalisations',         data.hospitalisations + (data.hospitalisationsDetail ? `: ${data.hospitalisationsDetail}` : '')],
+        ['Allergies',                data.allergies + (data.allergiesDetail ? `: ${data.allergiesDetail}` : '')],
+        ['Pregnant?',                data.pregnant],
       ],
       '4. Banking & Payment Details': [
-        ['Account Holder',  data.accountHolder],
-        ['Bank Name',       data.bankName],
-        ['Branch Code',     data.branchCode],
-        ['Account Number',  data.accountNumber],
-        ['Account Type',    data.accountType],
-        ['Debit Order Date',data.debitDate],
+        ['Account Holder',   data.accountHolder],
+        ['Bank Name',        data.bankName],
+        ['Branch Code',      data.branchCode],
+        ['Account Number',   data.accountNumber],
+        ['Account Type',     data.accountType],
+        ['Debit Order Date', data.debitDate],
       ],
       '5. Emergency Contact': [
-        ['Full Name',       data.emergencyName],
-        ['Relationship',    data.emergencyRelationship],
-        ['Contact Number',  data.emergencyPhone],
+        ['Full Name',      data.emergencyName],
+        ['Relationship',   data.emergencyRelationship],
+        ['Contact Number', data.emergencyPhone],
       ],
-      '6. Declaration': [
+      '6. Supporting Documents': [
+        ['ID Copy Uploaded',           files.idCopy   ? 'Yes — see email attachment' : 'Not provided'],
+        ['Bank Letter Uploaded',       files.bankLetter ? 'Yes — see email attachment' : 'Not provided'],
+      ],
+      '7. Declaration': [
         ['Agreed to Terms', data.declaration ? 'Yes' : 'No'],
         ['Printed Name',    data.printName],
         ['Date Signed',     data.signDate],
@@ -148,9 +168,33 @@ module.exports = async function handler(req, res) {
     const pdfBytes  = await pdfDoc.save();
     const pdfBuffer = Buffer.from(pdfBytes);
 
+    // ─── Build uploaded-doc attachments ──────────────────────────────────────
+    const docAttachments = [];
+
+    for (const [fieldName, label] of [['idCopy', 'ID_Copy'], ['bankLetter', 'Bank_Confirmation_Letter']]) {
+      const fileInfo = files[fieldName];
+      if (!fileInfo) continue;
+      const file = Array.isArray(fileInfo) ? fileInfo[0] : fileInfo;
+      if (!file || !file.filepath) continue;
+      try {
+        const buf  = fs.readFileSync(file.filepath);
+        const ext  = path.extname(file.originalFilename || file.newFilename || '.pdf');
+        docAttachments.push({
+          filename: `${label}_${data.surname ?? 'Applicant'}${ext}`,
+          content:  buf.toString('base64'),
+        });
+      } catch (readErr) {
+        console.warn(`Could not read uploaded file ${fieldName}:`, readErr.message);
+      }
+    }
+
+    // ─── Docs note for email ─────────────────────────────────────────────────
+    const docsNote = docAttachments.length > 0
+      ? `<p style="margin:6px 0 0;font-size:13px;color:#4a7c10;">📎 <strong>${docAttachments.length} supporting document(s)</strong> attached: ${docAttachments.map(a => a.filename).join(', ')}</p>`
+      : `<p style="margin:6px 0 0;font-size:13px;color:#888;">No supporting documents uploaded — applicant will bring to branch.</p>`;
+
     // ─── Styled HTML email ────────────────────────────────────────────────────
-    const htmlBody = `
-<!DOCTYPE html>
+    const htmlBody = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -185,7 +229,7 @@ module.exports = async function handler(req, res) {
               <!-- Member Details -->
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
                 <tr>
-                  <td colspan="2" style="padding-bottom:10px;border-bottom:2px solid #00478f;margin-bottom:12px;">
+                  <td colspan="2" style="padding-bottom:10px;border-bottom:2px solid #00478f;">
                     <p style="margin:0;font-size:11px;font-weight:700;color:#00478f;letter-spacing:1.5px;text-transform:uppercase;">Principal Member</p>
                   </td>
                 </tr>
@@ -232,13 +276,14 @@ module.exports = async function handler(req, res) {
                 </tr>
               </table>
 
-              <!-- Notice -->
+              <!-- Attachments notice -->
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7fcef;border-left:4px solid #92D050;border-radius:6px;">
                 <tr>
                   <td style="padding:16px 20px;">
                     <p style="margin:0;font-size:13px;color:#4a7c10;line-height:1.6;">
                       📎 <strong>Full application details</strong> including medical history, banking information, and emergency contacts are captured in the <strong>PDF attachment</strong>.
                     </p>
+                    ${docsNote}
                   </td>
                 </tr>
               </table>
@@ -263,16 +308,16 @@ module.exports = async function handler(req, res) {
 
     // ─── Send email ───────────────────────────────────────────────────────────
     const result = await resend.emails.send({
-      from: 'Starmed Forms <forms@forms.starmednamibia.com>',
-      to:   ['starmedicalservices@iway.na'],
-      replyTo: data.mobile ? undefined : undefined,
+      from:    'Starmed Forms <forms@forms.starmednamibia.com>',
+      to:      ['starmedicalservices@iway.na'],
       subject: `New Uluntu Medicare Application — ${data.firstName ?? ''} ${data.surname ?? ''}`,
-      html: htmlBody,
+      html:    htmlBody,
       attachments: [
         {
           filename: `Uluntu_Application_${data.surname ?? 'Unknown'}.pdf`,
           content:  pdfBuffer.toString('base64'),
         },
+        ...docAttachments,
       ],
     });
 
