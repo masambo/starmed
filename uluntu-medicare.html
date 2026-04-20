@@ -503,6 +503,269 @@
       </div>
     </section>
 
+
+    <!-- ════════════════════════════════════════════
+         MEERKAT FAQ
+         ════════════════════════════════════════════ -->
+    <section id="faq" style="padding: 80px 0; background: linear-gradient(160deg, #f0f9ff 0%, #e8f4fc 100%); overflow: hidden;">
+      <div class="container">
+
+        <div style="text-align: center; margin-bottom: 56px;">
+          <div class="section-label reveal" style="justify-content: center;">Got Questions?</div>
+          <h2 class="section-title reveal" style="color: rgb(0,71,143);">Let Our Meerkat Answer!</h2>
+          <p class="section-subtitle reveal" style="max-width: 560px; margin: 0 auto; color: rgb(89,89,89);">
+            Our friendly Star Medical meerkat has all the answers about Uluntu Medicare.
+          </p>
+        </div>
+
+        <!-- Two-column layout: meerkat + accordion -->
+        <div class="faq-layout">
+
+          <!-- Meerkat mascot (full body) -->
+          <div class="faq-mascot-wrap">
+            <img src="images/meekartfull.png" alt="Star Medical Meerkat" class="faq-mascot-img" id="faq-mascot" />
+            <div class="faq-mascot-badge">Ask me anything!</div>
+          </div>
+
+          <!-- Accordion -->
+          <div class="faq-accordion" id="faq-accordion">
+
+            <div class="faq-item">
+              <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+                <span>How much does Uluntu Medicare cost?</span>
+                <span class="faq-chevron">▾</span>
+              </button>
+              <div class="faq-a">
+                <div class="faq-bubble">
+                  <img src="images/meekarthalf.png" alt="Meerkat" class="faq-bubble-meerkat" />
+                  <p>Only <strong>N$250 per member per month</strong>! That gives you 12 doctor consultations a year, essential medications, and continuous care — no hidden fees, no surprises. 🎉</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+                <span>Who can join Uluntu Medicare?</span>
+                <span class="faq-chevron">▾</span>
+              </button>
+              <div class="faq-a">
+                <div class="faq-bubble">
+                  <img src="images/meekarthalf.png" alt="Meerkat" class="faq-bubble-meerkat" />
+                  <p>Anyone! Whether you're an <strong>individual, a family, an employee, or a small business owner</strong> — Uluntu Medicare is designed for every Namibian who deserves quality primary healthcare. 🇳🇦</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+                <span>What is included in my membership?</span>
+                <span class="faq-chevron">▾</span>
+              </button>
+              <div class="faq-a">
+                <div class="faq-bubble">
+                  <img src="images/meekarthalf.png" alt="Meerkat" class="faq-bubble-meerkat" />
+                  <p>You get <strong>12 consultations per year</strong>, access to <strong>essential medications</strong>, <strong>follow-up care</strong>, and <strong>preventive health guidance</strong> — all at our 4 clinic locations. 💊🩺</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+                <span>Are there any exclusions or conditions?</span>
+                <span class="faq-chevron">▾</span>
+              </button>
+              <div class="faq-a">
+                <div class="faq-bubble">
+                  <img src="images/meekarthalf.png" alt="Meerkat" class="faq-bubble-meerkat" />
+                  <p>No exclusions based on pre-existing conditions for <strong>primary care</strong>. Uluntu Medicare covers everyday healthcare needs — no complicated procedures. Just straightforward, inclusive care! 🌟</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+                <span>How do I sign up?</span>
+                <span class="faq-chevron">▾</span>
+              </button>
+              <div class="faq-a">
+                <div class="faq-bubble">
+                  <img src="images/meekarthalf.png" alt="Meerkat" class="faq-bubble-meerkat" />
+                  <p>Super easy! You can <strong>apply online</strong> on this page, <strong>download a PDF form</strong> and hand it in at any branch, or simply <strong>walk in</strong> to any of our 4 locations with your ID. We'll handle the rest! 📋</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+                <span>Which clinics can I visit?</span>
+                <span class="faq-chevron">▾</span>
+              </button>
+              <div class="faq-a">
+                <div class="faq-bubble">
+                  <img src="images/meekarthalf.png" alt="Meerkat" class="faq-bubble-meerkat" />
+                  <p>You can visit any of our <strong>4 Star Medical branches</strong>: Ausspannplatz, Katutura, Greenwell, and Ongwediva — with more locations coming soon! 🏥</p>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /faq-accordion -->
+        </div><!-- /faq-layout -->
+      </div>
+    </section>
+
+    <style>
+      /* ── FAQ Layout ── */
+      .faq-layout {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 48px;
+        align-items: start;
+      }
+      @media (max-width: 768px) {
+        .faq-layout { grid-template-columns: 1fr; }
+        .faq-mascot-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 8px; }
+      }
+
+      /* ── Mascot ── */
+      .faq-mascot-wrap {
+        position: sticky;
+        top: 100px;
+        text-align: center;
+      }
+      .faq-mascot-img {
+        width: 100%;
+        max-width: 220px;
+        filter: drop-shadow(0 16px 32px rgba(0,71,143,0.18));
+        transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      }
+      .faq-mascot-img.wiggle {
+        animation: mascotWiggle 0.5s cubic-bezier(0.34,1.56,0.64,1);
+      }
+      @keyframes mascotWiggle {
+        0%   { transform: rotate(0deg) scale(1); }
+        25%  { transform: rotate(-6deg) scale(1.08); }
+        50%  { transform: rotate(5deg) scale(1.05); }
+        75%  { transform: rotate(-3deg) scale(1.02); }
+        100% { transform: rotate(0deg) scale(1); }
+      }
+      .faq-mascot-badge {
+        display: inline-block;
+        margin-top: 14px;
+        background: rgb(146,208,80);
+        color: white;
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 6px 18px;
+        border-radius: 999px;
+        letter-spacing: 0.04em;
+        box-shadow: 0 4px 12px rgba(146,208,80,0.35);
+      }
+
+      /* ── Accordion ── */
+      .faq-item {
+        margin-bottom: 12px;
+        border-radius: 16px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 2px 12px rgba(0,71,143,0.07);
+        transition: box-shadow 0.2s;
+      }
+      .faq-item.open {
+        box-shadow: 0 6px 24px rgba(0,71,143,0.14);
+      }
+      .faq-q {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px 24px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        font-weight: 600;
+        color: rgb(0,71,143);
+        transition: background 0.18s;
+      }
+      .faq-q:hover { background: rgba(0,71,143,0.04); }
+      .faq-item.open .faq-q { background: rgba(0,71,143,0.05); }
+      .faq-chevron {
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        color: rgb(146,208,80);
+      }
+      .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+      /* Answer panel */
+      .faq-a {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+      }
+      .faq-item.open .faq-a { max-height: 300px; }
+
+      /* Speech bubble with meerkat */
+      .faq-bubble {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 20px 24px;
+        background: linear-gradient(135deg, #f0f8ff, #e8f4fc);
+        border-top: 1px solid rgba(0,71,143,0.08);
+      }
+      .faq-bubble-meerkat {
+        width: 64px;
+        height: 64px;
+        object-fit: contain;
+        flex-shrink: 0;
+        border-radius: 50%;
+        border: 2px solid rgba(146,208,80,0.4);
+        background: white;
+        padding: 2px;
+        transform: translateX(-20px);
+        opacity: 0;
+        transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.05s, opacity 0.3s ease 0.05s;
+      }
+      .faq-item.open .faq-bubble-meerkat {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      .faq-bubble p {
+        margin: 0;
+        font-size: 0.95rem;
+        color: rgb(50,70,100);
+        line-height: 1.7;
+      }
+    </style>
+
+    <script>
+      function toggleFaq(btn) {
+        const item = btn.closest('.faq-item');
+        const isOpen = item.classList.contains('open');
+
+        // Close all
+        document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+        btn.setAttribute('aria-expanded', 'false');
+
+        // Open clicked if it was closed
+        if (!isOpen) {
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+
+          // Wiggle the mascot
+          const mascot = document.getElementById('faq-mascot');
+          mascot.classList.remove('wiggle');
+          void mascot.offsetWidth; // reflow
+          mascot.classList.add('wiggle');
+          mascot.addEventListener('animationend', () => mascot.classList.remove('wiggle'), { once: true });
+        }
+      }
+    </script>
+
     </main>
 
     <!-- ════════════════════════════════════════════
